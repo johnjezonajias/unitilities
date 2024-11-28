@@ -70,6 +70,7 @@ class Plugin {
     private function load_features() {
         new Features\WpMetaTag();
         new Features\ForceCommentApproval();
+        new Features\ForceThreadCommentsDepth();
         new Features\CommentFilter();
     }
 
