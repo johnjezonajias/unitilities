@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Unitilities
  * Plugin URI: https://webdevjohnajias.one/unitilities
- * Description: My common WordPress utility settings.
+ * Description: A collection of common WordPress utility settings and features.
  * Version: 1.0.0
  * Author: John Jezon Ajias
  * Author URI: https://webdevjohnajias.one/
@@ -34,22 +34,25 @@ spl_autoload_register( function ( $class ) {
 // Main Plugin Class.
 class Plugin {
     /**
-     * Initialize the plugin.
-    */
+     * Constructor to initialize the plugin, register hooks, and load features.
+     */
     public function __construct() {
-        // Activation hook.
+        // Activation hook to set default settings.
         register_activation_hook( __FILE__, [ $this, 'on_activation' ] );
 
-        // Load features.
+        // Load additional plugin features.
         $this->load_features();
 
-        // Register main settings page.
+        // Register the settings page for the plugin in the admin menu.
         add_action( 'admin_menu', [ $this, 'register_settings_page' ] );
     }
 
     /**
-     * Set default settings on activation.
-    */
+     * Set default settings on plugin activation.
+     *
+     * This function ensures that the necessary options are set when the plugin is activated.
+     * It checks for the existence of settings and initializes them if they are missing.
+     */
     public function on_activation() {
         if ( false === get_option( 'unitilities_remove_wp_generator' ) ) {
             update_option( 'unitilities_remove_wp_generator', '1' );
@@ -60,15 +63,19 @@ class Plugin {
     }
 
     /**
-     * Load plugin features.
-    */
+     * Load the features for the plugin.
+     *
+     * This function initializes the different features of the plugin such as WpMetaTag and CommentFilter.
+     */
     private function load_features() {
         new Features\WpMetaTag();
         new Features\CommentFilter();
     }
 
     /**
-     * Register unified settings page.
+     * Register the plugin's settings page in the WordPress admin menu.
+     *
+     * This function adds a new options page where users can configure settings for the plugin.
      */
     public function register_settings_page() {
         add_options_page(
@@ -81,9 +88,12 @@ class Plugin {
     }
 
     /**
-     * Render the unified settings page with tabs.
+     * Render the plugin's settings page with different sections (tabs).
+     *
+     * Depending on the active tab, this function renders the corresponding settings sections.
      */
     public function render_settings_page() {
+        // Get the active tab from the query string, default to 'utilities'.
         $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'utilities';
         ?>
         <div class="wrap">
@@ -101,6 +111,7 @@ class Plugin {
             </h2>
             <form method="post" action="options.php">
                 <?php
+                    // Render different sections based on the active tab.
                     if ( $active_tab === 'utilities' ) {
                         do_settings_sections( 'unitilities_utilities' );
                         settings_fields( 'unitilities_utilities_settings' );
