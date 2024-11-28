@@ -45,14 +45,15 @@ class CommentFilter {
         // Loop through each censored word and replace it with "****".
         foreach ( $censored_words as $word ) {
             if ( ! empty( $word ) ) {
-                $tooltip = '<span class="tooltip" aria-label="This word is censored for inappropriate language.">****</span>';
+                $tooltip = '<span class="tooltip" aria-label="This word is censored for inappropriate language.">*****</span>';
+                $escaped_word = preg_quote( $word, '/' ); // Escape special characters in the word.
                 $comment_text = preg_replace(
-                    '/' . preg_quote( $word, '/' ) . '/i', // Case-insensitive match.
+                    '/\b' . $escaped_word . '\b/i', // Match whole words, case-insensitive.
                     $tooltip,
                     $comment_text
                 );
             }
-        }
+        }        
 
         return $comment_text;
     }

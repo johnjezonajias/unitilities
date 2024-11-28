@@ -58,7 +58,7 @@ class Plugin {
             update_option( 'unitilities_remove_wp_generator', '1' );
         }
         if ( false === get_option( 'unitilities_censored_words' ) ) {
-            update_option( 'unitilities_censored_words', [] );
+            update_option( 'unitilities_censored_words', ['puha', 'kill', 'dumb', 'stupid', 'ass'] );
         }
     }
 
