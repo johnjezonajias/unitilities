@@ -42,6 +42,9 @@ class Plugin {
 
         // Load features.
         $this->load_features();
+
+        // Register main settings page.
+        add_action( 'admin_menu', [ $this, 'register_settings_page' ] );
     }
 
     /**
@@ -51,6 +54,9 @@ class Plugin {
         if ( false === get_option( 'unitilities_remove_wp_generator' ) ) {
             update_option( 'unitilities_remove_wp_generator', '1' );
         }
+        if ( false === get_option( 'unitilities_censored_words' ) ) {
+            update_option( 'unitilities_censored_words', [] );
+        }
     }
 
     /**
@@ -58,6 +64,57 @@ class Plugin {
     */
     private function load_features() {
         new Features\WpMetaTag();
+        new Features\CommentFilter();
+    }
+
+    /**
+     * Register unified settings page.
+     */
+    public function register_settings_page() {
+        add_options_page(
+            __( 'Unitilities Settings', 'unitilities' ),
+            __( 'Unitilities', 'unitilities' ),
+            'manage_options',
+            'unitilities-settings',
+            [ $this, 'render_settings_page' ]
+        );
+    }
+
+    /**
+     * Render the unified settings page with tabs.
+     */
+    public function render_settings_page() {
+        $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'utilities';
+        ?>
+        <div class="wrap">
+            <h1><?php esc_html_e( 'Unitilities Settings', 'unitilities' ); ?></h1>
+            <h2 class="nav-tab-wrapper">
+                <a href="?page=unitilities-settings&tab=utilities" class="nav-tab <?php echo $active_tab === 'utilities' ? 'nav-tab-active' : ''; ?>">
+                    <?php esc_html_e( 'Basic Settings', 'unitilities' ); ?>
+                </a>
+                <a href="?page=unitilities-settings&tab=comment_filter" class="nav-tab <?php echo $active_tab === 'comment_filter' ? 'nav-tab-active' : ''; ?>">
+                    <?php esc_html_e( 'Comment Filter', 'unitilities' ); ?>
+                </a>
+                <a href="?page=unitilities-settings&tab=future_features" class="nav-tab <?php echo $active_tab === 'future_features' ? 'nav-tab-active' : ''; ?>">
+                    <?php esc_html_e( 'Future Features', 'unitilities' ); ?>
+                </a>
+            </h2>
+            <form method="post" action="options.php">
+                <?php
+                    if ( $active_tab === 'utilities' ) {
+                        do_settings_sections( 'unitilities_utilities' );
+                        settings_fields( 'unitilities_utilities_settings' );
+                    } elseif ( $active_tab === 'comment_filter' ) {
+                        do_settings_sections( 'unitilities_comment_filter' );
+                        settings_fields( 'unitilities_comment_filter_settings' );
+                    } else {
+                        echo '<p>' . esc_html__( 'Future features will be added here.', 'unitilities' ) . '</p>';
+                    }
+                    submit_button();
+                ?>
+            </form>
+        </div>
+        <?php
     }
 }
 

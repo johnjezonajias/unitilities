@@ -9,7 +9,7 @@ class WpMetaTag {
     public function __construct() {
         add_action( 'init', [ $this, 'remove_wp_generator' ] );
         add_action( 'admin_init', [ $this, 'register_settings' ] );
-        add_action( 'admin_menu', [ $this, 'add_settings_page' ] );
+        //add_action( 'admin_menu', [ $this, 'add_settings_page' ] );
     }
 
     /**
@@ -21,50 +21,28 @@ class WpMetaTag {
         }
     }
 
-    /**
-     * Register plugin settings.
-     */
     public function register_settings() {
-        register_setting( 'unitilities_settings', 'unitilities_remove_wp_generator' );
-    }
-
-    /**
-     * Add settings page to admin menu.
-     */
-    public function add_settings_page() {
-        add_options_page(
-            __( 'Unitilities Settings', 'unitilities' ),
-            __( 'Unitilities', 'unitilities' ),
-            'manage_options',
-            'unitilities-settings',
-            [ $this, 'render_settings_page' ]
+        register_setting( 'unitilities_utilities_settings', 'unitilities_remove_wp_generator' );
+        add_settings_section(
+            'unitilities_utilities_section',
+            __( 'Common utility settings', 'unitilities' ),
+            null,
+            'unitilities_utilities'
+        );
+        add_settings_field(
+            'unitilities_remove_wp_generator',
+            __( 'Remove WordPress Version', 'unitilities' ),
+            [ $this, 'render_wp_generator_field' ],
+            'unitilities_utilities',
+            'unitilities_utilities_section'
         );
     }
-
-    /**
-     * Render the settings page.
-     */
-    public function render_settings_page() {
+    
+    public function render_wp_generator_field() {
+        $value = get_option( 'unitilities_remove_wp_generator', '0' );
         ?>
-        <div class="wrap">
-            <h1><?php esc_html_e( 'Unitilities Settings', 'unitilities' ); ?></h1>
-            <form method="post" action="options.php">
-                <?php
-                settings_fields( 'unitilities_settings' );
-                $remove_wp_generator = get_option( 'unitilities_remove_wp_generator', '0' );
-                ?>
-                <table class="form-table">
-                    <tr>
-                        <th><?php esc_html_e( 'Remove wp_generator', 'unitilities' ); ?></th>
-                        <td>
-                            <input type="checkbox" name="unitilities_remove_wp_generator" value="1" <?php checked( '1', $remove_wp_generator ); ?> />
-                            <?php esc_html_e( 'Disable WordPress version meta tag in the head.', 'unitilities' ); ?>
-                        </td>
-                    </tr>
-                </table>
-                <?php submit_button(); ?>
-            </form>
-        </div>
+        <input type="checkbox" name="unitilities_remove_wp_generator" value="1" <?php checked( '1', $value ); ?> />
+        <?php esc_html_e( 'Disable WordPress version meta tag in the head/source code?', 'unitilities' ); ?>
         <?php
     }
 }
