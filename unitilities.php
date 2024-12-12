@@ -68,6 +68,7 @@ class Plugin {
      * This function initializes the different features of the plugin such as WpMetaTag and CommentFilter.
      */
     private function load_features() {
+        new Features\RedirectHome404();
         new Features\WpMetaTag();
         new Features\ForcePermalinkStructure();
         new Features\ForceCommentApproval();
